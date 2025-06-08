@@ -3,11 +3,11 @@ import {Subject} from "../models/subject.model.js"
  
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import {asynchandler} from "../utils/asynchandler.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 
-const getAllSubjects = asyncHandler(async (req, res) => {
+const getAllSubjects = asynchandler(async (req, res) => {
   const authorId = req.params.authorId;
 
   try {
@@ -24,7 +24,7 @@ const getAllSubjects = asyncHandler(async (req, res) => {
 });
 
 
-const publishASubject = asyncHandler(async (req, res) => {
+const publishASubject = asynchandler(async (req, res) => {
   const { name, rank, author } = req.body;
 
   if (!name || !rank || !author) {
@@ -39,23 +39,23 @@ const publishASubject = asyncHandler(async (req, res) => {
   }
 });
 
-// const getSubjectById = asyncHandler(async (req, res) => {
+// const getSubjectById = asynchandler(async (req, res) => {
 //     const { SubjectId } = req.params
 //     //TODO: get Subject by id
 // })
 
-// const updateSubject = asyncHandler(async (req, res) => {
+// const updateSubject = asynchandler(async (req, res) => {
 //     const { SubjectId } = req.params
 //     //TODO: update Subject details like title, description, thumbnail
 
 // })
 
-// const deleteSubject = asyncHandler(async (req, res) => {
+// const deleteSubject = asynchandler(async (req, res) => {
 //     const { SubjectId } = req.params
 //     //TODO: delete Subject
 // })
 
-// const togglePublishStatus = asyncHandler(async (req, res) => {
+// const togglePublishStatus = asynchandler(async (req, res) => {
 //     const { SubjectId } = req.params
 // })
 

@@ -1,8 +1,8 @@
-import {asyncHandler} from "../utils/asyncHandler.js"
+import {asynchandler} from "../utils/asynchandler.js"
 import { Question } from "../models/questions.model.js";
 
 // GET /questions — list with pagination, filter, sort
-const getAllQuestions = asyncHandler(async (req, res) => {
+const getAllQuestions = asynchandler(async (req, res) => {
   const { topicId } = req.params;
 
   if (!topicId) {
@@ -18,7 +18,7 @@ const getAllQuestions = asyncHandler(async (req, res) => {
 
 
 // POST /questions — create new question
-const publishAQuestion = asyncHandler(async (req, res) => {
+const publishAQuestion = asynchandler(async (req, res) => {
   const {
     ranking,
     topicId,
@@ -55,7 +55,7 @@ const publishAQuestion = asyncHandler(async (req, res) => {
 
 
 // GET /questions/:questionId — get question by ID
-const getQuestionById = asyncHandler(async (req, res) => {
+const getQuestionById = asynchandler(async (req, res) => {
   const { questionId } = req.params;
 
   const question = await Question.findById(questionId);
@@ -67,7 +67,7 @@ const getQuestionById = asyncHandler(async (req, res) => {
 });
 
 // PUT /questions/:questionId — update question
-const updateQuestion = asyncHandler(async (req, res) => {
+const updateQuestion = asynchandler(async (req, res) => {
   const { questionId } = req.params;
 
   const updated = await Question.findByIdAndUpdate(questionId, req.body, {
@@ -83,7 +83,7 @@ const updateQuestion = asyncHandler(async (req, res) => {
 });
 
 // DELETE /questions/:questionId — delete question
-const deleteQuestion = asyncHandler(async (req, res) => {
+const deleteQuestion = asynchandler(async (req, res) => {
   const { questionId } = req.params;
 
   const deleted = await Question.findByIdAndDelete(questionId);

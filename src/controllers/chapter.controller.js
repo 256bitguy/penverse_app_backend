@@ -3,11 +3,11 @@ import {Chapter} from "../models/chapter.models.js"
  
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import {asynchandler} from "../utils/asynchandler.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 
-const getAllChapter = asyncHandler(async (req, res) => {
+const getAllChapter = asynchandler(async (req, res) => {
     const subjectId = req.params.subjectId
     try {
         const allChapters =await  Chapter.find({subject : subjectId})
@@ -16,7 +16,7 @@ const getAllChapter = asyncHandler(async (req, res) => {
         res.status(400).json({error : "No Chapter Found"})        
     }
 })
-const publishAChapter = asyncHandler(async (req, res) => {
+const publishAChapter = asynchandler(async (req, res) => {
   const { name, ranking, subject } = req.body;
 
   if (!name || !ranking || !subject) {
@@ -31,23 +31,23 @@ const publishAChapter = asyncHandler(async (req, res) => {
   }
 });
 
-// const getChapterById = asyncHandler(async (req, res) => {
+// const getChapterById = asynchandler(async (req, res) => {
 //     const { ChapterId } = req.params
 //     //TODO: get Chapter by id
 // })
 
-// const updateChapter = asyncHandler(async (req, res) => {
+// const updateChapter = asynchandler(async (req, res) => {
 //     const { ChapterId } = req.params
 //     //TODO: update Chapter details like title, description, thumbnail
 
 // })
 
-// const deleteChapter = asyncHandler(async (req, res) => {
+// const deleteChapter = asynchandler(async (req, res) => {
 //     const { ChapterId } = req.params
 //     //TODO: delete Chapter
 // })
 
-// const toggleCompleteStatus = asyncHandler(async (req, res) => {
+// const toggleCompleteStatus = asynchandler(async (req, res) => {
 //     const { ChapterId } = req.params
 // })
 
