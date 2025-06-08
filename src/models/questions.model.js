@@ -12,14 +12,14 @@ const questionSchema = new mongoose.Schema({
   },
   statements: [
     {
-      order: { type: String, required: true },
-      statement: { type: String, required: true }
+      order: { type: String,  },
+      statement: { type: String,  }
     }
   ],
   options: [
     {
-      order: { type: String, required: true },
-      statement: { type: String, required: true }
+      order: { type: String,  },
+      statement: { type: String,  }
     }
   ],
   question: {
@@ -28,7 +28,6 @@ const questionSchema = new mongoose.Schema({
   },
   correctOption: {
     type: [Number], // allow multiple correct options if needed
-    required: true
   },
   answer: {
     type: String,

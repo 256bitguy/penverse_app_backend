@@ -3,43 +3,40 @@ import { Question } from "../models/questions.model.js";
 
 // GET /questions — list with pagination, filter, sort
 const getAllQuestions = asyncHandler(async (req, res) => {
-  const {
-    page = 1,
-    limit = 10,
-    query = '',
-    sortBy = 'ranking',
-    sortType = 'asc',
-    userId // optional filtering
-  } = req.query;
+  const { topicId } = req.params;
 
-  const skip = (page - 1) * limit;
-  const sortOption = { [sortBy]: sortType === 'desc' ? -1 : 1 };
+  if (!topicId) {
+    return res.status(400).json({ message: "topicId is required in params" });
+  }
 
-  const filter = {
-    question: { $regex: query, $options: 'i' },
-    ...(userId && { author: userId }) // if filtering by user
-  };
-
-  const total = await Question.countDocuments(filter);
-  const questions = await Question.find(filter)
-    .sort(sortOption)
-    .skip(skip)
-    .limit(Number(limit));
+  const questions = await Question.find({ topicId });
 
   res.status(200).json({
-    total,
-    page: Number(page),
-    limit: Number(limit),
-    questions
+    questions,
   });
 });
 
+
 // POST /questions — create new question
 const publishAQuestion = asyncHandler(async (req, res) => {
-  const { ranking, topicId, question, correctOption, answer, statements, options, type } = req.body;
+  const {
+    ranking,
+    topicId,
+    question,
+    correctOption,
+    answer,
+    statements,
+    options,
+    type
+  } = req.body;
 
-  if (!ranking || !topicId || !question || !correctOption || !answer || !type) {
-    return res.status(400).json({ message: "Missing required fields" });
+  const requiredFields = ['ranking', 'topicId', 'question', 'correctOption', 'answer', 'statements', 'options', 'type'];
+  const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null || req.body[field] === '');
+
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      message: `Missing required fields: ${missingFields.join(', ')}`
+    });
   }
 
   const newQuestion = await Question.create({
@@ -55,6 +52,7 @@ const publishAQuestion = asyncHandler(async (req, res) => {
 
   res.status(201).json(newQuestion);
 });
+
 
 // GET /questions/:questionId — get question by ID
 const getQuestionById = asyncHandler(async (req, res) => {

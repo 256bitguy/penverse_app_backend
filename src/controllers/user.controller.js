@@ -106,10 +106,10 @@ const loginUser = asyncHandler(async (req, res) =>{
     //access and referesh token
     //send cookie
 
-    const {email, username, password} = req.body
-    console.log(email);
+    const { username, password} = req.body
+    console.log(username);
 
-    if (!username && !email) {
+    if (!username ) {
         throw new ApiError(400, "username or email is required")
     }
     
@@ -120,7 +120,7 @@ const loginUser = asyncHandler(async (req, res) =>{
     // }
 
     const user = await User.findOne({
-        $or: [{username}, {email}]
+        $or: [{username}]
     })
 
     if (!user) {
@@ -132,7 +132,7 @@ const loginUser = asyncHandler(async (req, res) =>{
    if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials")
     }
-    console.log(user)
+    
    const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
