@@ -6,10 +6,12 @@ import {
   getVocabularyById,
   updateVocabulary,
   deleteVocabulary,
+  getVocabularyByDate,
 } from "../controllers/vocabulary.controller.js";
 
 const router = Router();
 router.use(verifyJWT);
+router.route("/by-date").get(getVocabularyByDate);
 
 // POST /vocabulary/create — create new vocabulary
 router.post("/publish", createVocabulary);

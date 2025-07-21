@@ -8,6 +8,33 @@ const getNotesByTopic = asynchandler(async (req, res) => {
   res.status(200).json({ notes });
 });
 
+ const getNotesByDate = async (req, res) => {
+  try {
+    const userId = req.user._id; // From JWT middleware
+    const { date } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ message: "Date query is required (YYYY-MM-DD)" });
+    }
+
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const notes = await Note.find({
+      createdAt: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(notes);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching notes by date", error: err.message });
+  }
+};
 // POST /notes
 const createNote = asynchandler(async (req, res) => {
   const note = await Note.create(req.body);
@@ -40,6 +67,7 @@ export {
   getNotesByTopic,
   createNote,
   getNoteById,
+  getNotesByDate,
   updateNote,
   deleteNote,
 };
