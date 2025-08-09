@@ -11,7 +11,8 @@ const chapterSchema = new mongoose.Schema({
     },
     subject:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Subject'
+        ref:'Subject',
+         index:true
     }
     
 },{timestamps:true});

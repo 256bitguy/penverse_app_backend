@@ -8,7 +8,8 @@ const questionSchema = new mongoose.Schema({
   topicId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Topic",
-    required: true
+    required: true,
+    index:true
   },
   statements: [
     {

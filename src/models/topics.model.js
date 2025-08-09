@@ -11,7 +11,8 @@ const topicSchema = new mongoose.Schema({
         },
         chapter:{
             type: mongoose.Schema.Types.ObjectId,
-            ref:'Chapter'
+            ref:'Chapter',
+             index:true
         }
 },{timestamps:true});
 

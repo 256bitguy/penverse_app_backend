@@ -10,7 +10,7 @@ const getAllQuestions = asynchandler(async (req, res) => {
   }
 
   const questions = await Question.find({ topicId });
-
+ 
   res.status(200).json({
     questions,
   });

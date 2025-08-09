@@ -10,7 +10,7 @@ const getAllVocabulary = asynchandler(async (req, res) => {
   }
 
   const vocabulary =  await Vocabulary.find({ topicId });
-  
+
   res.status(200).json({
 vocabulary
   });

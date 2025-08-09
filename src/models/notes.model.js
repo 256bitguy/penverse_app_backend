@@ -22,6 +22,7 @@ const noteSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Topic",
       required: true,
+       index:true
     },
     subheadings: [subheadingSchema],
   },
