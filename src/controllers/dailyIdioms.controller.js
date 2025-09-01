@@ -1,4 +1,4 @@
-import { DailyIdiom } from "../models/dailIyIdioms.model.js";
+import { DailyIdiom } from "../models/dailyIdioms.model.js";
 
 // ✅ Create Daily Idiom
 export const createDailyIdiom = async (req, res) => {

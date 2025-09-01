@@ -1,61 +1,77 @@
-import mongoose, {isValidObjectId} from "mongoose"
-import {Chapter} from "../models/chapter.models.js"
- 
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asynchandler} from "../utils/asynchandler.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import mongoose from "mongoose";
+import { Chapter } from "../models/chapter.models.js";
+import { asynchandler } from "../utils/asynchandler.js";
 
-
-const getAllChapter = asynchandler(async (req, res) => {
-    const subjectId = req.params.subjectId
-    try {
-        const allChapters =await  Chapter.find({subject : subjectId})
-        res.status(201).json({allChapters})
-    } catch (error) {
-        res.status(400).json({error : "No Chapter Found"})        
-    }
-})
-const publishAChapter = asynchandler(async (req, res) => {
-  const { name, ranking, subject } = req.body;
+// CREATE a new Chapter
+export const publishAChapter = asynchandler(async (req, res) => {
+  const { name, ranking, subject, image } = req.body;
 
   if (!name || !ranking || !subject) {
     return res.status(400).json({ error: "Name, Ranking, and Subject are required" });
   }
 
-  try {
-    const chapter = await Chapter.create({ name, ranking, subject });
-    res.status(201).json({ chapter });
-  } catch (error) {
-    res.status(500).json({ error: error.message || "Something went wrong" });
-  }
+  const newChapter = await Chapter.create({ name, ranking, subject, image });
+  res.status(201).json(newChapter);
 });
 
-// const getChapterById = asynchandler(async (req, res) => {
-//     const { ChapterId } = req.params
-//     //TODO: get Chapter by id
-// })
+// READ all Chapters by Subject
+export const getAllChaptersBySubject = asynchandler(async (req, res) => {
+  const { subjectId } = req.params;
 
-// const updateChapter = asynchandler(async (req, res) => {
-//     const { ChapterId } = req.params
-//     //TODO: update Chapter details like title, description, thumbnail
+  if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+    return res.status(400).json({ error: "Invalid Subject ID" });
+  }
 
-// })
+  const chapters = await Chapter.find({ subject: subjectId }).sort({ ranking: 1 });
+  if (!chapters.length) return res.status(404).json({ error: "No chapters found" });
 
-// const deleteChapter = asynchandler(async (req, res) => {
-//     const { ChapterId } = req.params
-//     //TODO: delete Chapter
-// })
+  res.json(chapters);
+});
 
-// const toggleCompleteStatus = asynchandler(async (req, res) => {
-//     const { ChapterId } = req.params
-// })
+// READ single Chapter by ID
+export const getChapterById = asynchandler(async (req, res) => {
+  const { chapterId } = req.params;
 
-export {
-   getAllChapter,
-   publishAChapter,
-//    getChapterById,
-//    updateChapter,
-//    deleteChapter,
-//    toggleCompleteStatus
-}
+  if (!mongoose.Types.ObjectId.isValid(chapterId)) {
+    return res.status(400).json({ error: "Invalid Chapter ID" });
+  }
+
+  const chapter = await Chapter.findById(chapterId);
+  if (!chapter) return res.status(404).json({ error: "Chapter not found" });
+
+  res.json(chapter);
+});
+
+// UPDATE Chapter by ID
+export const updateChapterById = asynchandler(async (req, res) => {
+  const { chapterId } = req.params;
+  const { name, ranking, subject, image } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(chapterId)) {
+    return res.status(400).json({ error: "Invalid Chapter ID" });
+  }
+
+  const updatedChapter = await Chapter.findByIdAndUpdate(
+    chapterId,
+    { name, ranking, subject, image, updatedAt: new Date() },
+    { new: true }
+  );
+
+  if (!updatedChapter) return res.status(404).json({ error: "Chapter not found" });
+
+  res.json(updatedChapter);
+});
+
+// DELETE Chapter by ID
+export const deleteChapterById = asynchandler(async (req, res) => {
+  const { chapterId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(chapterId)) {
+    return res.status(400).json({ error: "Invalid Chapter ID" });
+  }
+
+  const deleted = await Chapter.findByIdAndDelete(chapterId);
+  if (!deleted) return res.status(404).json({ error: "Chapter not found" });
+
+  res.json({ message: "Chapter deleted successfully" });
+});
