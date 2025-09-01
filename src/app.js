@@ -3,7 +3,7 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 
 const app = express()
-
+ 
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true
@@ -15,15 +15,24 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 
-//routes import
+ 
 import userRouter from './routes/user.routes.js'
-// import healthcheckRouter from "./routes/healthcheck.routes.js"
+
 import subjectRouter from "./routes/subject.routes.js"
 import chapterRouter from "./routes/chapter.routes.js"
 import topicRouter from "./routes/topics.routes.js"
 import questionRouter from "./routes/question.routes.js"
 import Vocabulary  from "./routes/vocabulary.route.js"
 import notes   from "./routes/notes.routes.js"
+import uploadRoutes from "./routes/upload.routes.js";
+import awareness from "./routes/awareness.routes.js";
+import dailyAwareness from "./routes/dailyAwareness.routes.js";
+import dailyEditorial from "./routes/dailyEditorial.routes.js";
+import dailyIdioms from "./routes/dailyIdioms.routes.js";
+import dailyPhrasalVerbs from "./routes/dailyPhrasalVerbs.routes.js";
+import dailyVocab from "./routes/dailyVocab.routes.js";
+import idioms from "./routes/idioms.routes.js";
+import phrasalVerb from "./routes/phrasalVerb.routes.js";
 
 //routes declaration
 app.use("/api/v1/users", userRouter)
@@ -32,7 +41,15 @@ app.use("/api/v1/chapters", chapterRouter)
 app.use("/api/v1/topics", topicRouter)
 app.use("/api/v1/questions", questionRouter)
 app.use("/api/v1/vocabulary", Vocabulary)
+app.use("/api/v1/phrasalverb", phrasalVerb)
+app.use("/api/v1/idioms", idioms)
 app.use("/api/v1/notes", notes)
-
+app.use("/api/v1/awareness", awareness);
+app.use("/api/v1/dailyidioms", dailyIdioms);
+app.use("/api/v1/dailyphrasal", dailyPhrasalVerbs);
+app.use("/api/v1/dailyeditorial", dailyEditorial);
+app.use("/api/v1/dailyvocab", dailyVocab);
+app.use("/api/v1/dailyawareness", dailyAwareness);
+app.use("/api/v1/uploads", uploadRoutes);
 
 export { app }

@@ -14,6 +14,10 @@ const subjectSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    image: {
+      type: String, // Cloudinary URL
+      required: false // optional
+    },
   },
   { timestamps: true }
 );

@@ -1,21 +1,23 @@
 import mongoose from "mongoose";
- 
+
 const chapterSchema = new mongoose.Schema({
-    name:{
-        type:String,
+    name: {
+        type: String,
         required: true
     },
-    ranking:{
+    ranking: {
         type: Number,
-        required:true
+        required: true
     },
-    subject:{
+    subject: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Subject',
-         index:true
+        ref: 'Subject',
+        index: true
+    },
+    image: {
+        type: String,   
+        required: false  
     }
-    
-},{timestamps:true});
+}, { timestamps: true });
 
- 
-export const Chapter = mongoose.model("Chapter",chapterSchema)
+export const Chapter = mongoose.model("Chapter", chapterSchema);

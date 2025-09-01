@@ -1,21 +1,51 @@
 import mongoose from "mongoose";
- import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const storySchema = new mongoose.Schema({
-     name:{
-            type:String,
-            required: true
-        },
-        ranking:{
-            type: Number,
-            required:true
-        },
-        subject:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref:'Subject'
-        }
-},{timestamps:true});
+const editorialOptionSchema = new mongoose.Schema({
+  statement: {
+    type: String,
+    required: true,
+  },
+});
 
- 
+const editorialQuestionSchema = new mongoose.Schema({
+  statement: {
+    type: String,
+    required: true,
+  },
+  options: {
+    type: [editorialOptionSchema],
+    default: [],
+  },
+  correctAnswer: {
+    type: String,
+    required: true,
+  },
+});
 
-export const Story = mongoose.model("Story",storySchema)
+const editorialSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    paragraph: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,  
+      required: false,
+    },
+    date: {
+      type: Date,
+      default: Date.now,  
+    },
+    questions: {
+      type: [editorialQuestionSchema],
+      default: [],
+    },
+  },
+  { timestamps: true }      
+);
+
+export const Editorial = mongoose.model("Editorial", editorialSchema);
