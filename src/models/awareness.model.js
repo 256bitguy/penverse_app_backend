@@ -42,9 +42,10 @@ const questionSchema = new mongoose.Schema({
   correctOption: { type: String, required: true },
 });
 
-// Main Banking Awareness Item
-const  AwarenessItemSchema = new mongoose.Schema(
+// Main Awareness Item
+const AwarenessItemSchema = new mongoose.Schema(
   {
+    topicId: { type: mongoose.Schema.Types.ObjectId, ref: "Topic", default: null },
     imageUrl: { type: String, required: true },
     title: { type: String, required: true },
     date: { type: String, required: true, index: true }, // index added for faster queries
@@ -70,9 +71,6 @@ const  AwarenessItemSchema = new mongoose.Schema(
 );
 
 // optional compound index (date + type) for very fast lookups
- AwarenessItemSchema.index({ date: 1, type: 1 });
+AwarenessItemSchema.index({ date: 1, type: 1 });
 
-export const  Awareness = mongoose.model(
-  " Awareness",
-   AwarenessItemSchema
-);
+export const Awareness = mongoose.model("Awareness", AwarenessItemSchema);
