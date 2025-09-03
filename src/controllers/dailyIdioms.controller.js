@@ -1,4 +1,5 @@
-import { DailyIdiom } from "../models/dailyIdioms.model.js";
+ 
+import { DailyIdiom } from "../models/dailyIdioms.model.js"; 
 
 // ✅ Create Daily Idiom
 export const createDailyIdiom = async (req, res) => {
@@ -11,8 +12,8 @@ export const createDailyIdiom = async (req, res) => {
       return res.status(400).json({ error: "Daily idiom already exists for this date" });
     }
 
-    const newDailyIdiom = await DailyIdiom.create({ date, list });
-    res.status(201).json(newDailyIdiom);
+    const newIdiom = await DailyIdiom.create({ date, list });
+    res.status(201).json(new DailyIdiom);
   } catch (error) {
     res.status(500).json({ error: "Failed to create Daily Idiom", details: error.message });
   }
@@ -24,7 +25,7 @@ export const getDailyIdiomByDate = async (req, res) => {
     const { date } = req.params;
 
     const dailyIdiom = await DailyIdiom.findOne({ date })
-      .populate("list"); // populate idioms for full details
+      .populate("list");  
 
     if (!dailyIdiom) {
       return res.status(404).json({ error: "No idioms found for this date" });
