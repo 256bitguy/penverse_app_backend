@@ -8,16 +8,16 @@ import {
 
 const router = express.Router();
 
-// Create a new daily phrase
+// ✅ Create a daily phrasal verbs list
 router.post("/", createDailyPhrase);
 
-// Get daily phrase by date (format: YYYY-MM-DD)
+// ✅ Get a daily phrasal verbs list by date
 router.get("/:date", getDailyPhraseByDate);
 
-// Update daily phrase by date
+// ✅ Update a daily phrasal verbs list by date
 router.put("/:date", updateDailyPhrase);
 
-// Delete daily phrase by date
+// ✅ Delete a daily phrasal verbs list by date
 router.delete("/:date", deleteDailyPhrase);
 
 export default router;

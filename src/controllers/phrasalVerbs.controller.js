@@ -1,4 +1,4 @@
-import { PhrasalVerb } from "../models/PhrasalVerb.js";
+import { PhrasalVerb } from "../models/phrasalVerb.model.js";
 
 // CREATE a new Phrasal Verb
 export const createPhrasalVerb = async (req, res) => {
@@ -28,6 +28,7 @@ export const createPhrasalVerb = async (req, res) => {
 };
 
 // READ Phrasal Verb by ID
+
 export const getPhrasalVerbById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -39,7 +40,7 @@ export const getPhrasalVerbById = async (req, res) => {
   }
 };
 
-// UPDATE Phrasal Verb by ID
+// UPDATE Phrasal Verb by ID 
 export const updatePhrasalVerb = async (req, res) => {
   try {
     const { id } = req.params;
@@ -47,18 +48,38 @@ export const updatePhrasalVerb = async (req, res) => {
 
     const updatedVerb = await PhrasalVerb.findByIdAndUpdate(
       id,
-      { ...updates, updatedAt: new Date() },
-      { new: true }
+      { $set: { ...updates }, updatedAt: new Date() }, // ✅ Use $set
+      { new: true, runValidators: true }
     ).populate("topicId");
 
-    if (!updatedVerb) return res.status(404).json({ error: "Phrasal verb not found" });
+    if (!updatedVerb) {
+      return res.status(404).json({ error: "Phrasal verb not found" });
+    }
+
     res.json(updatedVerb);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// DELETE Phrasal Verb by ID
+
+// UPDATE Phrasal Verb by ID 
+export const getPhrasalVerbsByTopicId = async (req, res) => {
+  try {
+    const { topicId } = req.params;
+
+    const verbs = await PhrasalVerb.find({ topicId }).populate("topicId");
+
+    if (!verbs || verbs.length === 0) {
+      return res.status(404).json({ error: "No phrasal verbs found for this topic" });
+    }
+
+    res.json(verbs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+// DELETE Phrasal Verb by ID createPhrasalVerb getPhrasalVerbById updatePhrasalVerb deletePhrasalVerb
 export const deletePhrasalVerb = async (req, res) => {
   try {
     const { id } = req.params;

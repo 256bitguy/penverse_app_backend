@@ -1,16 +1,14 @@
 import express from "express";
 import {
-  createDailyPhrase,
-  getDailyPhraseByDate,
-  updateDailyPhrase,
-  deleteDailyPhrase,
-} from "../controllers/dailyPhrasalVerbs.controller.js";
+  createPhrasalVerb, getPhrasalVerbById, updatePhrasalVerb, deletePhrasalVerb,getPhrasalVerbsByTopicId
+} from "../controllers/phrasalVerbs.controller.js";
 
 const router = express.Router();
-
-router.post("/", createDailyPhrase);
-router.get("/:date", getDailyPhraseByDate);
-router.put("/:date", updateDailyPhrase);
-router.delete("/:date", deleteDailyPhrase);
+ 
+router.post("/", createPhrasalVerb);
+router.get("/topic/:topicId", getPhrasalVerbsByTopicId);
+router.get("/:id", getPhrasalVerbById);
+router.put("/:id", updatePhrasalVerb);
+router.delete("/:id", deletePhrasalVerb);
 
 export default router;
