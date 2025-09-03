@@ -23,6 +23,7 @@ import chapterRouter from "./routes/chapter.routes.js"
 import topicRouter from "./routes/topics.routes.js"
 import questionRouter from "./routes/question.routes.js"
 import Vocabulary  from "./routes/vocabulary.route.js"
+import Editorials  from "./routes/editorials.routes.js"
 import notes   from "./routes/notes.routes.js"
 import uploadRoutes from "./routes/upload.routes.js";
 import awareness from "./routes/awareness.routes.js";
@@ -41,6 +42,7 @@ app.use("/api/v1/chapters", chapterRouter)
 app.use("/api/v1/topics", topicRouter)
 app.use("/api/v1/questions", questionRouter)
 app.use("/api/v1/vocabulary", Vocabulary)
+app.use("/api/v1/editorials", Editorials)
 app.use("/api/v1/phrasalverb", phrasalVerb)
 app.use("/api/v1/idioms", idioms)
 app.use("/api/v1/notes", notes)
