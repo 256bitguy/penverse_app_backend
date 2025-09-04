@@ -1,6 +1,16 @@
 import mongoose from "mongoose";
 
-// Synonym / Antonym Schema
+// Schema for individual meaning/explanation of the word
+const explanationSchema = new mongoose.Schema(
+  {
+    meaning: { type: String, required: true },
+    englishExplanation: { type: String, required: true },
+    hindiExplanation: { type: String, required: true },
+  },
+  { _id: false } // ✅ no separate _id for each explanation
+);
+
+// Schema for synonyms and antonyms
 const synonymAntonymSchema = new mongoose.Schema(
   {
     word: { type: String, required: true },
@@ -27,13 +37,24 @@ const vocabularySchema = new mongoose.Schema(
     },
     imageUrl: { type: String }, // optional
     partOfSpeech: { type: String }, // optional
-    englishExplanation: { type: String, required: true },
-    hindiExplanation: { type: String, required: true },
+
+    // ✅ Now a word can have multiple explanations
+    explanations: {
+      type: [explanationSchema],
+      required: true,
+      validate: [
+        {
+          validator: function (value) {
+            return value.length > 0;
+          },
+          message: "At least one explanation is required",
+        },
+      ],
+    },
 
     synonyms: { type: [synonymAntonymSchema], default: [] },
     antonyms: { type: [synonymAntonymSchema], default: [] },
 
-    // ✅ Flexible timestamps
     createdAt: { type: Date, default: undefined },
     updatedAt: { type: Date, default: undefined },
   },
@@ -48,7 +69,7 @@ vocabularySchema.pre("save", function (next) {
   next();
 });
 
-// ✅ Compound Text Index for optimized full-text search
+// ✅ Full-text search index
 vocabularySchema.index({
   word: "text",
   "synonyms.word": "text",

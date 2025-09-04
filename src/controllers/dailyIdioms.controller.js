@@ -21,6 +21,7 @@ export const createDailyIdiom = async (req, res) => {
 
 // ✅ Get Daily Idiom by date
 export const getDailyIdiomByDate = async (req, res) => {
+   
   try {
     const { date } = req.params;
 
@@ -28,11 +29,13 @@ export const getDailyIdiomByDate = async (req, res) => {
       .populate("list");  
 
     if (!dailyIdiom) {
+      
       return res.status(404).json({ error: "No idioms found for this date" });
     }
-
+    
     res.json(dailyIdiom);
   } catch (error) {
+     
     res.status(500).json({ error: "Failed to fetch Daily Idiom", details: error.message });
   }
 };

@@ -7,7 +7,7 @@ import {
 } from "../controllers/dailyIdioms.controller.js";
 
 const router = express.Router();
-
+ 
 router.post("/", createDailyIdiom);
 router.get("/:date", getDailyIdiomByDate);
 router.put("/:date", updateDailyIdiom);

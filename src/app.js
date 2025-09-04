@@ -36,6 +36,7 @@ import idioms from "./routes/idioms.routes.js";
 import phrasalVerb from "./routes/phrasalVerb.routes.js";
 
 //routes declaration
+ 
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/subjects", subjectRouter)
 app.use("/api/v1/chapters", chapterRouter)
