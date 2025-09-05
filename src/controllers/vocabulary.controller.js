@@ -1,129 +1,101 @@
+import { Vocabulary } from "../models/vocabulary.model.js";
 import mongoose from "mongoose";
-  import { Vocabulary } from "../models/vocabulary.model.js";
-import { asynchandler } from "../utils/asynchandler.js";
 
-const getAllVocabulary = asynchandler(async (req, res) => {
-  const { topicId } = req.params;
-
-  if (!topicId) {
-    return res.status(400).json({ message: "topicId is required in params" });
-  }
-
-  const vocabulary =  await Vocabulary.find({ topicId });
-
-  res.status(200).json({
-vocabulary
-  });
-});
- 
-const getVocabularyByDate = async (req, res) => {
+// ✅ Create a new vocabulary word
+export const createVocabulary = async (req, res) => {
   try {
-const userObjectId = new mongoose.Types.ObjectId(req.user._id);
-    const { date } = req.query;
+  const vocab = new Vocabulary(req.body);
+  await vocab.save();
+  res.status(201).json(vocab);
+} catch (err) {
+  if (err.code === 11000) {
+    // MongoDB duplicate key error
+    res.status(400).json({ error: "This word already exists." });
+  } else {
+    res.status(500).json({ error: err.message });
+  }
+}
+};
 
-    if (!date) {
-      return res.status(400).json({ message: "Missing required query: date (YYYY-MM-DD)" });
-    }
-
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate)) {
-      return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD." });
-    }
-
-    const startOfDay = new Date(parsedDate);
-    startOfDay.setUTCHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(parsedDate);
-    endOfDay.setUTCHours(23, 59, 59, 999);
-
-    const vocabList = await Vocabulary.find({
-      
-      createdAt: {
-        $gte: startOfDay,
-        $lte: endOfDay,
-      },
-    }).sort({ createdAt: -1 });
-
-    return res.status(200).json(vocabList);
-  } catch (error) {
-    console.error("Error in getVocabularyByDate:", error);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+// ✅ Get all vocabulary words
+export const getAllVocabularies = async (req, res) => {
+  try {
+    const vocabs = await Vocabulary.find().populate("topicId");
+    res.json(vocabs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
- 
-// POST /vocabulary/create — create a new vocabulary entry
-const createVocabulary = asynchandler(async (req, res) => {
-  const { word, topicId, explanation, synonyms, antonyms, fillingBlanks } = req.body;
+// ✅ Get vocabulary by ID
+export const getVocabularyById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(400).json({ error: "Invalid ID" });
 
-  const requiredFields = ["word", "topicId", "explanation", "synonyms", "antonyms", "fillingBlanks"];
-  const missingFields = requiredFields.filter(
-    (field) => req.body[field] === undefined || req.body[field] === null || req.body[field] === ""
-  );
+    const vocab = await Vocabulary.findById(id).populate("topicId");
+    if (!vocab) return res.status(404).json({ error: "Vocabulary not found" });
+    res.json(vocab);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-  if (missingFields.length > 0) {
-    return res.status(400).json({
-      message: `Missing required fields: ${missingFields.join(", ")}`,
+// ✅ Update vocabulary by ID
+export const updateVocabulary = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(400).json({ error: "Invalid ID" });
+
+    const updatedVocab = await Vocabulary.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
     });
+
+    if (!updatedVocab)
+      return res.status(404).json({ error: "Vocabulary not found" });
+
+    res.json(updatedVocab);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
+};
 
-  const newEntry = await Vocabulary.create({
-    word,
-    topicId,
-    explanation,
-    synonyms,
-    antonyms,
-    fillingBlanks,
-  });
+// ✅ Delete vocabulary by ID
+export const deleteVocabulary = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(400).json({ error: "Invalid ID" });
 
-  res.status(201).json(newEntry);
-});
+    const deletedVocab = await Vocabulary.findByIdAndDelete(id);
+    if (!deletedVocab)
+      return res.status(404).json({ error: "Vocabulary not found" });
 
-// GET /vocabulary/:id — get vocabulary entry by ID
-const getVocabularyById = asynchandler(async (req, res) => {
-  const { id } = req.params;
-
-  const entry = await Vocabulary.findById(id).populate("topicId", "name");
-  if (!entry) {
-    return res.status(404).json({ message: "Vocabulary entry not found" });
+    res.json({ message: "Vocabulary deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
+};
 
-  res.status(200).json(entry);
-});
+// ✅ Search vocabulary by word, synonym, or antonym
+export const searchVocabulary = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query)
+      return res
+        .status(400)
+        .json({ error: "Query parameter 'query' is required" });
 
-// PATCH /vocabulary/:id — update vocabulary entry by ID
-const updateVocabulary = asynchandler(async (req, res) => {
-  const { id } = req.params;
+    
+    const results = await Vocabulary.find({
+      $text: { $search: query },
+    }).populate("topicId");
 
-  const updatedEntry = await Vocabulary.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!updatedEntry) {
-    return res.status(404).json({ message: "Vocabulary entry not found or update failed" });
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  res.status(200).json(updatedEntry);
-});
-
-// DELETE /vocabulary/:id — delete vocabulary entry
-const deleteVocabulary = asynchandler(async (req, res) => {
-  const { id } = req.params;
-
-  const deleted = await Vocabulary.findByIdAndDelete(id);
-  if (!deleted) {
-    return res.status(404).json({ message: "Vocabulary entry not found or delete failed" });
-  }
-
-  res.status(200).json({ message: "Vocabulary entry deleted successfully" });
-});
-
-export {
-  getAllVocabulary,
-  createVocabulary,
-  getVocabularyById,
-  updateVocabulary,
-  deleteVocabulary,
-  getVocabularyByDate
 };

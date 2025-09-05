@@ -29,7 +29,7 @@ export const getDailyEditorialByDate = async (req, res) => {
       return res.status(404).json({ error: "No editorial items found for this date" });
     }
 
-    res.json(dailyEditorial);
+    res.json({data:dailyEditorial.list});
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch Daily Editorial", details: error.message });
   }

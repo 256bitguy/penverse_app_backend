@@ -27,6 +27,7 @@ const vocabularySchema = new mongoose.Schema(
     word: {
       type: String,
       required: true,
+      unique:true,
       index: true, // ✅ fast exact match search
     },
     topicId: {

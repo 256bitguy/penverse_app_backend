@@ -1,29 +1,23 @@
-import { Router } from "express";
-import { verifyJWT } from "../middleware/auth.middleware.js";
+import express from "express";
 import {
   createVocabulary,
-  getAllVocabulary,
+  getAllVocabularies,
   getVocabularyById,
   updateVocabulary,
   deleteVocabulary,
-  getVocabularyByDate,
+  searchVocabulary,
 } from "../controllers/vocabulary.controller.js";
 
-const router = Router();
-router.use(verifyJWT);
-router.route("/by-date").get(getVocabularyByDate);
+const router = express.Router();
 
-// POST /vocabulary/create — create new vocabulary
-router.post("/publish", createVocabulary);
- 
-// GET /vocabulary/:id — get one vocab entry by ID
-router.get("/:topicId", getAllVocabulary);
-router.get("/:id", getVocabularyById);
+// CRUD routes
+router.post("/", createVocabulary);             // Create
+router.get("/", getAllVocabularies);           // Read all
+router.get("/:id", getVocabularyById);         // Read one
+router.put("/:id", updateVocabulary);          // Update
+router.delete("/:id", deleteVocabulary);       // Delete
 
-// PATCH /vocabulary/:id — update vocab entry by ID
-router.patch("/:id", updateVocabulary);
-
-// DELETE /vocabulary/:id — delete vocab entry by ID
-router.delete("/:id", deleteVocabulary);
+// Search route
+router.get("/search/query", searchVocabulary); // ?query=word
 
 export default router;
