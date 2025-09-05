@@ -28,7 +28,7 @@ export const getDailyVocabByDate = async (req, res) => {
       return res.status(404).json({ error: "No daily vocab found for this date" });
     }
 
-    res.json(dailyVocab);
+    res.json({data:dailyVocab.list});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

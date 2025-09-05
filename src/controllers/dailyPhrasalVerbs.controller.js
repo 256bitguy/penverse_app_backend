@@ -19,8 +19,11 @@ export const getDailyPhraseByDate = async (req, res) => {
     const { date } = req.params;
     const dailyPhrase = await DailyPhrase.findOne({ date }).populate("list");
     if (!dailyPhrase) return res.status(404).json({ error: "No phrases for this date" });
-    res.json(dailyPhrase);
+    console.log("mai to success bhej diya bina kisi error ke")
+    res.json({data:dailyPhrase.list});
+
   } catch (err) {
+    console.log(" bhai error to tha bhai")
     res.status(500).json({ error: err.message });
   }
 };

@@ -33,7 +33,7 @@ export const getDailyIdiomByDate = async (req, res) => {
       return res.status(404).json({ error: "No idioms found for this date" });
     }
     
-    res.json(dailyIdiom);
+    res.json({data: dailyIdiom.list});
   } catch (error) {
      
     res.status(500).json({ error: "Failed to fetch Daily Idiom", details: error.message });
