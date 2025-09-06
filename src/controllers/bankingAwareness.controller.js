@@ -1,4 +1,4 @@
-import { Awareness } from "../models/awareness.model.js";
+import { Awareness } from "../models/bankingAwareness.model.js";
 import mongoose from "mongoose";
 
 // CREATE Awareness Item (all fields)

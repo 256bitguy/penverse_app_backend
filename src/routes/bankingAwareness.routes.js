@@ -6,7 +6,7 @@ import {
   searchAwarenessByTitle,
   updateAwarenessById,
   deleteAwarenessById,
-} from "../controllers/awareness.controller.js";
+} from "../controllers/bankingAwareness.controller.js";
 
 const router = express.Router();
 

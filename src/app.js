@@ -26,8 +26,8 @@ import Vocabulary  from "./routes/vocabulary.route.js"
 import Editorials  from "./routes/editorials.routes.js"
 import notes   from "./routes/notes.routes.js"
 import uploadRoutes from "./routes/upload.routes.js";
-import awareness from "./routes/awareness.routes.js";
-import dailyAwareness from "./routes/dailyAwareness.routes.js";
+import bankingawareness from "./routes/bankingAwareness.routes.js";
+import dailyBankingAwareness from "./routes/dailyBankingAwareness.routes.js";
 import dailyEditorial from "./routes/dailyEditorial.routes.js";
 import dailyIdioms from "./routes/dailyIdioms.routes.js";
 import dailyPhrasalVerbs from "./routes/dailyPhrasalVerbs.routes.js";
@@ -47,12 +47,12 @@ app.use("/api/v1/editorials", Editorials)
 app.use("/api/v1/phrasalverb", phrasalVerb)
 app.use("/api/v1/idioms", idioms)
 app.use("/api/v1/notes", notes)
-app.use("/api/v1/awareness", awareness);
+app.use("/api/v1/bankingawareness", bankingawareness);
 app.use("/api/v1/dailyidioms", dailyIdioms);
 app.use("/api/v1/dailyphrasal", dailyPhrasalVerbs);
 app.use("/api/v1/dailyeditorial", dailyEditorial);
 app.use("/api/v1/dailyvocab", dailyVocab);
-app.use("/api/v1/dailyawareness", dailyAwareness);
+app.use("/api/v1/dailybankingawareness", dailyBankingAwareness);
 app.use("/api/v1/uploads", uploadRoutes);
 
 export { app }

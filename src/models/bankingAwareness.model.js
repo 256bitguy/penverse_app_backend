@@ -51,7 +51,7 @@ const AwarenessItemSchema = new mongoose.Schema(
     date: { type: String, required: true, index: true }, // index added for faster queries
     type: {
       type: String,
-      enum: ["banking", "upsc"], // restrict values
+      enum: ["banking"], // restrict values
       required: true,
       index: true, // queries by type will also be faster
     },
@@ -73,4 +73,4 @@ const AwarenessItemSchema = new mongoose.Schema(
 // optional compound index (date + type) for very fast lookups
 AwarenessItemSchema.index({ date: 1, type: 1 });
 
-export const Awareness = mongoose.model("Awareness", AwarenessItemSchema);
+export const Awareness = mongoose.model("BankingAwareness", AwarenessItemSchema);
