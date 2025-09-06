@@ -1,13 +1,18 @@
-import { Router } from 'express';
- 
-import {verifyJWT} from "../middleware/auth.middleware.js"
-import { getAllSubjects, publishASubject } from '../controllers/subject.controller.js';
+import express from "express";
+import {
+  createSubject,
+  getAllSubjects,
+  getSubjectById,
+  updateSubject,
+  deleteSubject,
+} from "../controllers/subject.controller.js";
 
-const router = Router();
-router.use(verifyJWT);  
+const router = express.Router();
 
-router.route("/publish").post(publishASubject);
-router.route('/author/:authorId').get(getAllSubjects);
- 
+router.post("/", createSubject);       // Create
+router.get("/", getAllSubjects);       // Read all
+router.get("/:id", getSubjectById);    // Read one
+router.put("/:id", updateSubject);     // Update
+router.delete("/:id", deleteSubject);  // Delete
 
-export default router
+export default router;

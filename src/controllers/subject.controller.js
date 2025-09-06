@@ -1,69 +1,113 @@
-import mongoose, {isValidObjectId} from "mongoose"
-import {Subject} from "../models/subject.model.js"
- 
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asynchandler} from "../utils/asynchandler.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import Subject from "../models/subject.model.js";
 
-
-const getAllSubjects = asynchandler(async (req, res) => {
-  const authorId = req.params.authorId;
-
+/**
+ * @desc    Create a new Subject
+ * @route   POST /api/subjects
+ */
+export const createSubject = async (req, res) => {
   try {
-    const subjects = await Subject.find({ author: authorId });
-    
-    if (!subjects || subjects.length === 0) {
-      return res.status(404).json({ message: 'No subjects found for this author' });
+    const { name, description, iconType, iconValue } = req.body;
+
+    // Check if subject with same name already exists
+    const existing = await Subject.findOne({ name: name.trim() });
+    if (existing) {
+      return res.status(400).json({ message: "Subject already exists" });
     }
 
+    const subject = new Subject({
+      name,
+      description,
+      iconType,
+      iconValue,
+    });
+
+    await subject.save();
+
+    res.status(201).json({ message: "Subject created successfully", subject });
+  } catch (error) {
+    console.error("❌ Create Subject Error:", error);
+    res.status(500).json({ message: "Failed to create subject", error });
+  }
+};
+
+/**
+ * @desc    Get all Subjects
+ * @route   GET /api/subjects
+ */
+export const getAllSubjects = async (req, res) => {
+  try {
+    const subjects = await Subject.find().sort({ createdAt: -1 });
     res.status(200).json(subjects);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error("❌ Get All Subjects Error:", error);
+    res.status(500).json({ message: "Failed to fetch subjects", error });
   }
-});
+};
 
-
-const publishASubject = asynchandler(async (req, res) => {
-  const { name, rank, author } = req.body;
-
-  if (!name || !rank || !author) {
-    return res.status(400).json({ message: 'Please provide name, rank, and author' });
-  }
-
+/**
+ * @desc    Get single Subject by ID
+ * @route   GET /api/subjects/:id
+ */
+export const getSubjectById = async (req, res) => {
   try {
-    const newSubject = await Subject.create({ name, rank, author });
-    res.status(201).json(newSubject);
+    const subject = await Subject.findById(req.params.id);
+
+    if (!subject) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
+
+    res.status(200).json(subject);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to publish subject', error: error.message });
+    console.error("❌ Get Subject By ID Error:", error);
+    res.status(500).json({ message: "Failed to fetch subject", error });
   }
-});
+};
 
-// const getSubjectById = asynchandler(async (req, res) => {
-//     const { SubjectId } = req.params
-//     //TODO: get Subject by id
-// })
+/**
+ * @desc    Update Subject
+ * @route   PUT /api/subjects/:id
+ */
+export const updateSubject = async (req, res) => {
+  try {
+    const { name, description, iconType, iconValue } = req.body;
 
-// const updateSubject = asynchandler(async (req, res) => {
-//     const { SubjectId } = req.params
-//     //TODO: update Subject details like title, description, thumbnail
+    const subject = await Subject.findById(req.params.id);
 
-// })
+    if (!subject) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
 
-// const deleteSubject = asynchandler(async (req, res) => {
-//     const { SubjectId } = req.params
-//     //TODO: delete Subject
-// })
+    subject.name = name || subject.name;
+    subject.description = description || subject.description;
+    subject.iconType = iconType || subject.iconType;
+    subject.iconValue = iconValue || subject.iconValue;
 
-// const togglePublishStatus = asynchandler(async (req, res) => {
-//     const { SubjectId } = req.params
-// })
+    await subject.save();
 
-export {
-    getAllSubjects,
-    publishASubject,
-    // getSubjectById,
-    // updateSubject,
-    // deleteSubject,
-    // togglePublishStatus
-}
+    res.status(200).json({ message: "Subject updated successfully", subject });
+  } catch (error) {
+    console.error("❌ Update Subject Error:", error);
+    res.status(500).json({ message: "Failed to update subject", error });
+  }
+};
+
+/**
+ * @desc    Delete Subject
+ * @route   DELETE /api/subjects/:id
+ */
+export const deleteSubject = async (req, res) => {
+  try {
+    const subject = await Subject.findById(req.params.id);
+
+    if (!subject) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
+
+    await subject.deleteOne();
+
+    res.status(200).json({ message: "Subject deleted successfully" });
+  } catch (error) {
+    console.error("❌ Delete Subject Error:", error);
+    res.status(500).json({ message: "Failed to delete subject", error });
+  }
+};

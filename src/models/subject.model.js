@@ -1,3 +1,4 @@
+// models/Subject.js
 import mongoose from "mongoose";
 
 const subjectSchema = new mongoose.Schema(
@@ -5,21 +6,28 @@ const subjectSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
-    rank: {
-      type: Number,
+    description: {
+      type: String,
+      default: "",
+    },
+    iconType: {
+      type: String,
+      enum: ["local", "remote"], // local = asset, remote = URL
       required: true,
+      default: "local",
     },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    iconValue: {
+      type: String,
+      required: true, // either local icon key or remote URL
     },
-    image: {
-      type: String, // Cloudinary URL
-      required: false // optional
+    totalBooks: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }
 );
 
-export const Subject = mongoose.model("Subject", subjectSchema);
+export default mongoose.model("Subject", subjectSchema);

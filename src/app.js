@@ -34,7 +34,7 @@ import dailyPhrasalVerbs from "./routes/dailyPhrasalVerbs.routes.js";
 import dailyVocab from "./routes/dailyVocab.routes.js";
 import idioms from "./routes/idioms.routes.js";
 import phrasalVerb from "./routes/phrasalVerb.routes.js";
-
+import bookRoutes from "./routes/books.routes.js"
 //routes declaration
  
 app.use("/api/v1/users", userRouter)
@@ -54,5 +54,6 @@ app.use("/api/v1/dailyeditorial", dailyEditorial);
 app.use("/api/v1/dailyvocab", dailyVocab);
 app.use("/api/v1/dailybankingawareness", dailyBankingAwareness);
 app.use("/api/v1/uploads", uploadRoutes);
+app.use("/api/v1/books", bookRoutes);
 
 export { app }
