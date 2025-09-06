@@ -1,61 +1,128 @@
-import mongoose, {isValidObjectId} from "mongoose"
-import {Topic} from "../models/topics.model.js"
  
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asynchandler} from "../utils/asynchandler.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import Topic from "../models/topics.model.js";
 
+ 
 
-const getAllTopics = asynchandler(async (req, res) => {
-    const chapterId = req.params.chapterId
-    try {
-        const allTopics =await  Topic.find({chapter : chapterId})
-        res.status(201).json({allTopics})
-    } catch (error) {
-        res.status(400).json({error : "No Topic Found"})        
-    }
-})
-const publishATopic = asynchandler(async (req, res) => {
-  const { name, ranking, chapter } = req.body;
-
-  if (!name || !ranking || !chapter) {
-    return res.status(400).json({ error: "Name, Ranking, and chapter are required" });
-  }
-
+// Create a new topic ensuring unique title
+export const createTopic = async (req, res) => {
   try {
-    const topic = await Topic.create({ name, ranking, chapter });
-    res.status(201).json({ topic });
+    const { title, chapterId } = req.body;
+
+    if (!title || !chapterId) {
+      return res.status(400).json({ message: "Title and Chapter ID are required" });
+    }
+
+    // Check if a topic with the same title already exists
+    const existingTopic = await Topic.findOne({ title: title.trim() });
+    if (existingTopic) {
+      return res.status(400).json({ message: "A topic with this title already exists" });
+    }
+
+    const topic = new Topic({ title: title.trim(), chapterId });
+    await topic.save();
+
+    res.status(201).json({
+      message: "Topic created successfully",
+      topic,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message || "Something went wrong" });
+    console.error("❌ Create Topic Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-});
+};
 
-// const getTopicById = asynchandler(async (req, res) => {
-//     const { TopicId } = req.params
-     
-// })
 
-// const updateTopic = asynchandler(async (req, res) => {
-//     const { TopicId } = req.params
-    
+// Get all topics
+// controllers/topicController.js
 
-// })
+// Get all topics for a specific chapter
+export const getTopics = async (req, res) => {
+  try {
+    const { chapterId } = req.params; // Get chapterId from URL params
 
-// const deleteTopic = asynchandler(async (req, res) => {
-//     const { TopicId } = req.params
-    
-// })
+    if (!chapterId) {
+      return res.status(400).json({ message: "Chapter ID is required" });
+    }
 
-// const togglePublishStatus = asynchandler(async (req, res) => {
-//     const { TopicId } = req.params
-// })
+    const topics = await Topic.find({ chapterId }).populate("chapterId", "title");
 
-export {
-    getAllTopics,
-    publishATopic,
-    // getTopicById,
-    // updateTopic,
-    // deleteTopic,
-    // togglePublishStatus
-}
+    if (!topics.length) {
+      return res.status(404).json({ message: "No topics found for this chapter" });
+    }
+
+    res.status(200).json({data : topics});
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get a single topic by ID
+export const getTopicById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const topic = await Topic.findById(id).populate("chapterId", "title");
+
+    if (!topic) {
+      return res.status(404).json({ message: "Topic not found" });
+    }
+
+    res.status(200).json(topic);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get all topics for a specific chapter
+export const getTopicsByChapter = async (req, res) => {
+  try {
+    const { chapterId } = req.params;
+    const topics = await Topic.find({ chapterId }).sort({ createdAt: -1 });
+
+    if (!topics.length) {
+      return res.status(404).json({ message: "No topics found for this chapter" });
+    }
+
+    res.status(200).json({data : topics});
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Update a topic
+export const updateTopic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body;
+
+    const topic = await Topic.findByIdAndUpdate(
+      id,
+      { title },
+      { new: true }
+    );
+
+    if (!topic) {
+      return res.status(404).json({ message: "Topic not found" });
+    }
+
+    res.status(200).json({ message: "Topic updated successfully", topic });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Delete a topic
+export const deleteTopic = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const topic = await Topic.findByIdAndDelete(id);
+
+    if (!topic) {
+      return res.status(404).json({ message: "Topic not found" });
+    }
+
+    res.status(200).json({ message: "Topic deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

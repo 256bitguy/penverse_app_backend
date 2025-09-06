@@ -1,77 +1,130 @@
-import mongoose from "mongoose";
-import { Chapter } from "../models/chapter.models.js";
-import { asynchandler } from "../utils/asynchandler.js";
+// controllers/chapterController.js
+import Chapter from "../models/chapter.models.js";
 
-// CREATE a new Chapter
-export const publishAChapter = asynchandler(async (req, res) => {
-  const { name, ranking, subject, image } = req.body;
+ 
+// controllers/chapterController.js
+ 
+import Book from "../models/book.model.js";
 
-  if (!name || !ranking || !subject) {
-    return res.status(400).json({ error: "Name, Ranking, and Subject are required" });
+export const createChapter = async (req, res) => {
+  try {
+    const { title, description, bookId } = req.body;
+
+    // Validate required fields
+    if (!title || !bookId) {
+      return res.status(400).json({ message: "Title and Book ID are required" });
+    }
+
+    // Ensure the book exists
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    // Optional: Check if a chapter with the same title already exists for this book
+    const existingChapter = await Chapter.findOne({ bookId, title: title.trim() });
+    if (existingChapter) {
+      return res.status(400).json({ message: "A chapter with this title already exists in this book" });
+    }
+
+    // Create the chapter
+    const chapter = new Chapter({
+      title: title.trim(),
+      description: description || "",
+      bookId,
+    });
+
+    await chapter.save();
+
+    // Increment totalChapters in Book
+    book.totalChapters += 1;
+    await book.save();
+
+    res.status(201).json({
+      message: "Chapter created successfully",
+      chapter,
+    });
+  } catch (error) {
+    console.error("❌ Create Chapter Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
+};
 
-  const newChapter = await Chapter.create({ name, ranking, subject, image });
-  res.status(201).json(newChapter);
-});
+// Get all chapters
+// controllers/chapterController.js
 
-// READ all Chapters by Subject
-export const getAllChaptersBySubject = asynchandler(async (req, res) => {
-  const { subjectId } = req.params;
+// Get all chapters for a specific book
+export const getChapters = async (req, res) => {
+  try {
+    const { bookId } = req.params; // Get bookId from URL params
 
-  if (!mongoose.Types.ObjectId.isValid(subjectId)) {
-    return res.status(400).json({ error: "Invalid Subject ID" });
+    if (!bookId) {
+      return res.status(400).json({ message: "Book ID is required" });
+    }
+
+    const chapters = await Chapter.find({ bookId }).populate("bookId", "title author");
+
+    if (!chapters.length) {
+      return res.status(404).json({ message: "No chapters found for this book" });
+    }
+
+    res.status(200).json({data:chapters});
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
+};
 
-  const chapters = await Chapter.find({ subject: subjectId }).sort({ ranking: 1 });
-  if (!chapters.length) return res.status(404).json({ error: "No chapters found" });
+// Get a single chapter by ID
+export const getChapterById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const chapter = await Chapter.findById(id).populate("bookId", "title author");
 
-  res.json(chapters);
-});
+    if (!chapter) {
+      return res.status(404).json({ message: "Chapter not found" });
+    }
 
-// READ single Chapter by ID
-export const getChapterById = asynchandler(async (req, res) => {
-  const { chapterId } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(chapterId)) {
-    return res.status(400).json({ error: "Invalid Chapter ID" });
+    res.status(200).json(chapter);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
+};
 
-  const chapter = await Chapter.findById(chapterId);
-  if (!chapter) return res.status(404).json({ error: "Chapter not found" });
+// Update a chapter
+export const updateChapter = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
 
-  res.json(chapter);
-});
+    const chapter = await Chapter.findByIdAndUpdate(
+      id,
+      { title, description },
+      { new: true }
+    );
 
-// UPDATE Chapter by ID
-export const updateChapterById = asynchandler(async (req, res) => {
-  const { chapterId } = req.params;
-  const { name, ranking, subject, image } = req.body;
+    if (!chapter) {
+      return res.status(404).json({ message: "Chapter not found" });
+    }
 
-  if (!mongoose.Types.ObjectId.isValid(chapterId)) {
-    return res.status(400).json({ error: "Invalid Chapter ID" });
+    res.status(200).json({ message: "Chapter updated successfully", chapter });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
+};
 
-  const updatedChapter = await Chapter.findByIdAndUpdate(
-    chapterId,
-    { name, ranking, subject, image, updatedAt: new Date() },
-    { new: true }
-  );
+// Delete a chapter
+export const deleteChapter = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  if (!updatedChapter) return res.status(404).json({ error: "Chapter not found" });
+    const chapter = await Chapter.findByIdAndDelete(id);
 
-  res.json(updatedChapter);
-});
+    if (!chapter) {
+      return res.status(404).json({ message: "Chapter not found" });
+    }
 
-// DELETE Chapter by ID
-export const deleteChapterById = asynchandler(async (req, res) => {
-  const { chapterId } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(chapterId)) {
-    return res.status(400).json({ error: "Invalid Chapter ID" });
+    res.status(200).json({ message: "Chapter deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-
-  const deleted = await Chapter.findByIdAndDelete(chapterId);
-  if (!deleted) return res.status(404).json({ error: "Chapter not found" });
-
-  res.json({ message: "Chapter deleted successfully" });
-});
+};

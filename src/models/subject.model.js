@@ -7,6 +7,7 @@ const subjectSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true, // Ensures subject names are unique
     },
     description: {
       type: String,

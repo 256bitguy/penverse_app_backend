@@ -35,18 +35,27 @@ export const createBook = async (req, res) => {
  * @route   GET /api/books
  */
 export const getAllBooks = async (req, res) => {
+ 
   try {
-    const { subjectId } = req.query;
-    let filter = {};
+    const { subjectId } = req.params; // Get subjectId from URL params
 
-    if (subjectId) filter.subjectId = subjectId;
+    if (!subjectId) {
+      return res.status(400).json({ message: "Subject ID is required" });
+    }
 
-    const books = await Book.find(filter).populate("subjectId", "name");
+    // Directly query MongoDB using the indexed field
+    const books = await Book.find({ subjectId })
+      .populate("subjectId", "name") // Include subject name
+      .sort({ createdAt: -1 }); // Optional: newest first
 
-    res.status(200).json(books);
+    if (!books.length) {
+      return res.status(404).json({ message: "No books found for this subject" });
+    }
+
+    res.status(200).json({data:books});
   } catch (error) {
-    console.error("❌ Get All Books Error:", error);
-    res.status(500).json({ message: "Failed to fetch books", error });
+    console.error("❌ Get Books by Subject Error:", error);
+    res.status(500).json({ message: "Failed to fetch books", error: error.message });
   }
 };
 

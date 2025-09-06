@@ -34,15 +34,15 @@ export const createSubject = async (req, res) => {
  * @desc    Get all Subjects
  * @route   GET /api/subjects
  */
-export const getAllSubjects = async (req, res) => {
-  try {
-    const subjects = await Subject.find().sort({ createdAt: -1 });
-    res.status(200).json(subjects);
-  } catch (error) {
-    console.error("❌ Get All Subjects Error:", error);
-    res.status(500).json({ message: "Failed to fetch subjects", error });
-  }
-};
+  export const getAllSubjects = async (req, res) => {
+    try {
+      const subjects = await Subject.find().sort({ createdAt: -1 });
+      res.status(200).json({data: subjects});
+    } catch (error) {
+      console.error("❌ Get All Subjects Error:", error);
+      res.status(500).json({ message: "Failed to fetch subjects", error });
+    }
+  };
 
 /**
  * @desc    Get single Subject by ID

@@ -1,32 +1,19 @@
-import { Router } from "express";
-
-import { verifyJWT } from "../middleware/auth.middleware.js";
-
-const router = Router();
-// router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
-
+// routes/chapterRoutes.js
 import express from "express";
 import {
-  publishAChapter,
-  getAllChaptersBySubject,
+  createChapter,
+ getChapters,
   getChapterById,
-  updateChapterById,
-  deleteChapterById,
+  updateChapter,
+  deleteChapter,
 } from "../controllers/chapter.controller.js";
 
-// Create a new chapter
-router.post("/", publishAChapter);
-
-// Get all chapters by subject
-router.get("/subject/:subjectId", getAllChaptersBySubject);
-
-// Get a single chapter by ID
-router.get("/:chapterId", getChapterById);
-
-// Update a chapter by ID
-router.put("/:chapterId", updateChapterById);
-
-// Delete a chapter by ID
-router.delete("/:chapterId", deleteChapterById);
+const router = express.Router();
+getChapters
+router.post("/", createChapter);      // Create a chapter
+router.get("/book/:bookId", getChapters);       
+router.get("/:id", getChapterById);   // Get a single chapter by ID
+router.put("/:id", updateChapter);    // Update chapter by ID
+router.delete("/:id", deleteChapter); // Delete chapter by ID
 
 export default router;

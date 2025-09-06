@@ -1,32 +1,28 @@
 import mongoose from "mongoose";
 
-const nestedPointSchema = new mongoose.Schema({
-  label: { type: String, required: true }, // bold title
-  explanation: { type: String, required: true },
-  example: { type: String }, // optional
-});
+const pointSchema = new mongoose.Schema({
+  text: { type: String, default: "" },
+  explanation: { type: String, default: "" },
+  images: [{ type: String, default: "" }], // Array of images for this point
+}, { _id: false });
 
-const subheadingSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  points: [nestedPointSchema],
-  example: { type: String }, // optional
-  linkingNote: { type: String }, // optional
-  personalQuery: { type: String }, // optional
-  queryExplanation: { type: String }, // optional
-});
+const subtopicSchema = new mongoose.Schema({
+  name: { type: String, default: "" },
+  images: [{ type: String, default: "" }], // Array of images for this subtopic
+  points: [pointSchema]
+}, { _id: false });
 
-const noteSchema = new mongoose.Schema(
-  {
-    heading: { type: String, required: true },
-    topicId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Topic",
-      required: true,
-       index:true
-    },
-    subheadings: [subheadingSchema],
-  },
-  { timestamps: true }
-);
+const topicSchema = new mongoose.Schema({
+  name: { type: String, default: "" },
+  images: [{ type: String, default: "" }], // Array of images for this topic
+  subtopics: [subtopicSchema]
+}, { _id: false });
 
-export const Note = mongoose.model("Note", noteSchema);
+const noteSchema = new mongoose.Schema({
+  topicId: { type: mongoose.Schema.Types.ObjectId, ref: "Topic", required: true, index: true }, // Indexed topicId
+  heading: { type: String, default: "" },
+  images: [{ type: String, default: "" }], // Images for the note itself
+  topics: [topicSchema]
+}, { timestamps: true });
+
+export default mongoose.model("Note", noteSchema);

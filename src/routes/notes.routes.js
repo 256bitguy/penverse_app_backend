@@ -1,20 +1,27 @@
 import express from "express";
 import {
-  getNotesByTopic,
   createNote,
+  getNotesByTopicId,
   getNoteById,
   updateNote,
-  deleteNote,
-  getNotesByDate,
+  deleteNote
 } from "../controllers/notes.controller.js";
-import { verifyJWT } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
-router.use(verifyJWT);
 
-router.route("/by-date").get(getNotesByDate);
-router.route("/topic/:topicId").get(getNotesByTopic);
-router.route("/publish").post(createNote);
-router.route("/:id").get(getNoteById).patch(updateNote).delete(deleteNote);
+// Create note
+router.post("/", createNote);
+
+// Get all notes by topicId
+router.get("/topic/:topicId", getNotesByTopicId);
+
+// Get single note by its own id
+router.get("/:id", getNoteById);
+
+// Update note by id
+router.put("/:id", updateNote);
+
+// Delete note by id
+router.delete("/:id", deleteNote);
 
 export default router;

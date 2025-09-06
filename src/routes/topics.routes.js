@@ -1,13 +1,21 @@
-import { Router } from 'express';
-import {verifyJWT} from "../middleware/auth.middleware.js"
-import { getAllTopics, publishATopic } from '../controllers/topics.controller.js';
+// routes/topicRoutes.js
+import express from "express";
+import {
+  createTopic,
+  getTopics,
+  getTopicById,
+  getTopicsByChapter,
+  updateTopic,
+  deleteTopic,
+} from "../controllers/topics.controller.js";
 
-const router = Router();
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+const router = express.Router();
 
-router.route("/publish").post(publishATopic);
-router.route("/:chapterId").get(getAllTopics);
-// router.route("/toggle/t/:tweetId").post(toggleTweetLike);
-// router.route("/videos").get(getLikedVideos);
+router.post("/", createTopic);           // Create a topic
+router.get("/", getTopics);              // Get all topics
+router.get("/:id", getTopicById);        // Get a single topic by ID
+router.get("/chapter/:chapterId", getTopicsByChapter); // Get topics by chapter
+router.put("/:id", updateTopic);         // Update topic by ID
+router.delete("/:id", deleteTopic);      // Delete topic by ID
 
-export default router
+export default router;
