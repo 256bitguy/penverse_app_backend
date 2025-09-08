@@ -15,7 +15,7 @@ const editorialQuestionSchema = new mongoose.Schema({
 // Main Editorial Item Schema
 const editorialItemSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  paragraph: { type: String, required: true },
+  paragraph: { type: [String], required: true }, // <-- array of paragraphs
   questions: { type: [editorialQuestionSchema], default: [] },
   date: { type: Date, required: true, index: true }, // for daily selection
 }, { timestamps: true });

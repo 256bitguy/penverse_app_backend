@@ -5,12 +5,7 @@ export const createPhrasalVerb = async (req, res) => {
   try {
     const { topicId, phrasalVerb, meaning, imageUrl, englishExplanation, hindiExplanation, examples } = req.body;
 
-    // Check if phrasal verb already exists
-    const existing = await PhrasalVerb.findOne({ phrasalVerb });
-    if (existing) {
-      return res.status(400).json({ error: "Phrasal verb already exists" });
-    }
-
+    // Just create, no duplicate check
     const newVerb = await PhrasalVerb.create({
       topicId,
       phrasalVerb,
@@ -26,6 +21,7 @@ export const createPhrasalVerb = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // READ Phrasal Verb by ID
 
