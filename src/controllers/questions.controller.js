@@ -1,103 +1,115 @@
-import {asynchandler} from "../utils/asynchandler.js"
+// controllers/questionController.js
 import { Question } from "../models/questions.model.js";
 
-// GET /questions — list with pagination, filter, sort
-const getAllQuestions = asynchandler(async (req, res) => {
-  const { topicId } = req.params;
+// ========================
+// CREATE a new question
+// ========================
+export const createQuestion = async (req, res) => {
+  try {
+    const questionData = req.body;
 
-  if (!topicId) {
-    return res.status(400).json({ message: "topicId is required in params" });
-  }
+    const question = new Question(questionData);
+    await question.save();
 
-  const questions = await Question.find({ topicId });
- 
-  res.status(200).json({
-    questions,
-  });
-});
-
-
-// POST /questions — create new question
-const publishAQuestion = asynchandler(async (req, res) => {
-  const {
-    ranking,
-    topicId,
-    question,
-    correctOption,
-    answer,
-    statements,
-    options,
-    type
-  } = req.body;
-
-  const requiredFields = ['ranking', 'topicId', 'question', 'correctOption', 'answer', 'statements', 'options', 'type'];
-  const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null || req.body[field] === '');
-
-  if (missingFields.length > 0) {
-    return res.status(400).json({
-      message: `Missing required fields: ${missingFields.join(', ')}`
+    res.status(201).json({
+      success: true,
+      data: question,
+      message: "Question created successfully",
     });
+  } catch (error) {
+    console.error("Error creating question:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
+};
 
-  const newQuestion = await Question.create({
-    ranking,
-    topicId,
-    question,
-    correctOption,
-    answer,
-    statements,
-    options,
-    type
-  });
+// ========================
+// GET all questions
+// ========================
+export const getQuestions = async (req, res) => {
+  try {
+    const { topicid } = req.params;
+    
 
-  res.status(201).json(newQuestion);
-});
+    if (!topicid) {
+      return res.status(400).json({
+        success: false,
+        error: "topicId is required",
+      });
+    }
 
+    // Fetch all questions for the topicId and populate topic details
+    const questions = await Question.find({ topicId: topicid })
+      .populate("topicId")  // brings topic info
+      .sort({ ranking: 1 });
 
-// GET /questions/:questionId — get question by ID
-const getQuestionById = asynchandler(async (req, res) => {
-  const { questionId } = req.params;
+  
 
-  const question = await Question.findById(questionId);
-  if (!question) {
-    return res.status(404).json({ message: 'Question not found' });
+    res.json({ success: true, data: questions });
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
+};
 
-  res.status(200).json(question);
-});
 
-// PUT /questions/:questionId — update question
-const updateQuestion = asynchandler(async (req, res) => {
-  const { questionId } = req.params;
+// ========================
+// GET a single question by ID
+// ========================
+export const getQuestionById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const updated = await Question.findByIdAndUpdate(questionId, req.body, {
-    new: true,
-    runValidators: true
-  });
+    const question = await Question.findById(id);
+    if (!question) {
+      return res.status(404).json({ success: false, message: "Question not found" });
+    }
 
-  if (!updated) {
-    return res.status(404).json({ message: 'Question not found or update failed' });
+    res.json({ success: true, data: question });
+  } catch (error) {
+    console.error("Error fetching question:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
+};
 
-  res.status(200).json(updated);
-});
+// ========================
+// UPDATE a question
+// ========================
+export const updateQuestion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
 
-// DELETE /questions/:questionId — delete question
-const deleteQuestion = asynchandler(async (req, res) => {
-  const { questionId } = req.params;
+    const question = await Question.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
-  const deleted = await Question.findByIdAndDelete(questionId);
-  if (!deleted) {
-    return res.status(404).json({ message: 'Question not found or delete failed' });
+    if (!question) {
+      return res.status(404).json({ success: false, message: "Question not found" });
+    }
+
+    res.json({ success: true, data: question, message: "Question updated successfully" });
+  } catch (error) {
+    console.error("Error updating question:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
+};
 
-  res.status(200).json({ message: 'Question deleted successfully' });
-});
+// ========================
+// DELETE a question
+// ========================
+export const deleteQuestion = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-export {
-  getAllQuestions,
-  publishAQuestion,
-  getQuestionById,
-  updateQuestion,
-  deleteQuestion
+    const question = await Question.findByIdAndDelete(id);
+    if (!question) {
+      return res.status(404).json({ success: false, message: "Question not found" });
+    }
+
+    res.json({ success: true, message: "Question deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting question:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 };

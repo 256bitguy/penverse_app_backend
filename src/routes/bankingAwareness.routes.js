@@ -20,7 +20,7 @@ router.get("/:id", getAwarenessById);
 
 // GET list of Awareness items (filter by topicId or date)
 // GET /api/awareness?topicId=...&date=...
-router.get("/", getAwarenessList);
+router.get("/topic/:topicid", getAwarenessList);
 
 // SEARCH Awareness by title
 // GET /api/awareness/search?title=...

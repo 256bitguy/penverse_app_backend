@@ -26,6 +26,26 @@ export const getAllVocabularies = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// by topicID
+export const getVocabularyByTopic = async (req, res) => {
+  try {
+    const { topicid } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(topicid)) {
+      return res.status(400).json({ error: "Invalid Topic ID" });
+    }
+
+    const vocabList = await Vocabulary.find({ topicId: topicid }).populate("topicId");
+    
+    if (!vocabList || vocabList.length === 0) {
+      return res.status(404).json({ error: "No vocabulary found for this topic" });
+    }
+
+    res.json({data : vocabList});
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 // ✅ Get vocabulary by ID
 export const getVocabularyById = async (req, res) => {

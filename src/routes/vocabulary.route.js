@@ -1,7 +1,7 @@
 import express from "express";
 import {
   createVocabulary,
-  getAllVocabularies,
+  getVocabularyByTopic,
   getVocabularyById,
   updateVocabulary,
   deleteVocabulary,
@@ -12,7 +12,7 @@ const router = express.Router();
 
 // CRUD routes
 router.post("/", createVocabulary);             // Create
-router.get("/", getAllVocabularies);           // Read all
+router.get("/topic/:topicid", getVocabularyByTopic);           // Read all
 router.get("/:id", getVocabularyById);         // Read one
 router.put("/:id", updateVocabulary);          // Update
 router.delete("/:id", deleteVocabulary);       // Delete

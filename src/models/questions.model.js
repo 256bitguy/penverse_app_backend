@@ -6,54 +6,96 @@ const questionSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+
+    // Topic mapping
     topicId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Topic",
-      required: true,
-      index: true, // for filtering by topic
+      required: false,
+      index: true,
     },
-    topicName: {
-      type: String,
-      required: false, // optional (can cache here for faster UI rendering)
-      index: true,     // helpful if you want to search directly by topic name
-    },
+    topicName: { type: String, index: true },
+    tags: [{ type: String, index: true }],
+
+    // Core Question Structure
+    instructions: { type: String }, // optional pre-question instructions
+    questionText: { type: String }, // main question body
+    images: [{ type: String }], // array of image URLs (optional)
+
     statements: [
       {
-        order: { type: String },
-        statement: { type: String },
+        order: { type: Number },
+        text: { type: String },
       },
     ],
+
     options: [
       {
-        order: { type: String },
-        statement: { type: String },
+        order: { type: Number },
+        text: { type: String },
+        imageUrl: { type: String },
       },
     ],
-    question: {
-      type: String,
-      required: true,
-    },
-    correctOption: {
-      type: [Number], // supports multiple correct answers
-    },
-    answer: {
-      type: String,
-      required: true,
-    },
+
+    // Answers
+    singleCorrectIndex: { type: Number }, // if single correct
+    multipleCorrectIndexes: [{ type: Number }], // if multiple correct
+
+    // Solutions
+    solutionText: { type: String },
+    solutionImage: { type: String },
+
+    // Metadata
     type: {
       type: String,
-      enum: ["single", "multiple", "assertion-reason", "statement-based"],
-      required: true,
+      enum: [
+        "single", 
+        "multiple", 
+        "assertion-reason", 
+        "statement-based",
+        "chronology", 
+        "matching", 
+        "true-false", 
+        "fill-blank", 
+        "descriptive"
+      ],
     },
-    imageUrl: {
+    difficulty: {
       type: String,
-      required: false, // optional
+      enum: ["easy", "medium", "hard"],
+      default: "medium",
     },
-    date: {
-      type: Date,
-      required: true,
-      index: true, // index for faster queries by date
+    meta: {
+      marks: { type: Number, default: 1 },
+      negativeMarks: { type: Number, default: 0 },
+      source: { type: String },
+      year: { type: Number },
     },
+
+    // Variants
+    variant: {
+      assertionReason: {
+        assertion: { type: String },
+        reason: { type: String },
+        correctOption: { type: String }, // A/B/C/D style
+      },
+      chronology: {
+        items: [
+          {
+            event: { type: String },
+            year: { type: Number },
+          },
+        ],
+        correctOrder: [{ type: Number }], // array of indexes
+      },
+      trueFalse: {
+        statement: { type: String },
+        answer: { type: Boolean },
+      },
+    },
+
+    // System info
+    date: { type: Date, default: Date.now, },
   },
   { timestamps: true }
 );

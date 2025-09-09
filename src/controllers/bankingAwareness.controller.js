@@ -78,19 +78,17 @@ export const getAwarenessById = async (req, res) => {
 // GET list of Awareness by topicId or date
 export const getAwarenessList = async (req, res) => {
   try {
-    const { topicId, date } = req.query;
+    const { topicid } = req.params;
 
-    const filter = {};
-    if (topicId) {
-      if (!mongoose.Types.ObjectId.isValid(topicId))
-        return res.status(400).json({ error: "Invalid topicId" });
-      filter.topicId = topicId;
+    if (!topicid || !mongoose.Types.ObjectId.isValid(topicid)) {
+      return res.status(400).json({ error: "Invalid or missing topicId" });
     }
-    if (date) filter.date = date;
 
-    const items = await Awareness.find(filter).sort({ date: -1 });
-    if (!items.length)
+    const items = await Awareness.find({ topicId: topicid }).sort({ date: -1 });
+
+    if (!items.length) {
       return res.status(404).json({ error: "No awareness items found" });
+    }
 
     res.json(items);
   } catch (err) {

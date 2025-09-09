@@ -73,7 +73,7 @@ export const getPhrasalVerbsByTopicId = async (req, res) => {
       return res.status(404).json({ error: "No phrasal verbs found for this topic" });
     }
 
-    res.json(verbs);
+    res.json({data:verbs});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
