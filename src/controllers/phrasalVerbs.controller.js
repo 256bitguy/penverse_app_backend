@@ -4,7 +4,10 @@ import { PhrasalVerb } from "../models/phrasalVerb.model.js";
 export const createPhrasalVerb = async (req, res) => {
   try {
     const { topicId, phrasalVerb, meaning, imageUrl, englishExplanation, hindiExplanation, examples } = req.body;
-
+const existing = await PhrasalVerb.findOne({ phrasalVerb });
+    if (existing) {
+      return res.status(400).json({ error: "Phrasal verb already exists" });
+    }
     // Just create, no duplicate check
     const newVerb = await PhrasalVerb.create({
       topicId,
