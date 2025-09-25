@@ -104,18 +104,40 @@ export const deleteVocabulary = async (req, res) => {
 export const searchVocabulary = async (req, res) => {
   try {
     const { query } = req.query;
-    if (!query)
+    if (!query) {
       return res
         .status(400)
         .json({ error: "Query parameter 'query' is required" });
+    }
 
-    
-    const results = await Vocabulary.find({
-      $text: { $search: query },
-    }).populate("topicId");
+    // 1️⃣ Exact text search (word + hinglish)
+    const textResults = await Vocabulary.find(
+      { $text: { $search: query } },
+      { score: { $meta: "textScore" } }
+    )
+      .sort({ score: { $meta: "textScore" } })
+      .limit(10)
+      .populate({ path: "topicId", strictPopulate: false }); // 👈 avoids "Invalid ID"
 
-    res.json(results);
+    // 2️⃣ Regex search for partial matches
+    const regex = new RegExp(query, "i"); // case-insensitive
+    const regexResults = await Vocabulary.find({
+      $or: [{ word: regex }, { hinglish: regex }],
+    })
+      .limit(10)
+      .populate({ path: "topicId", strictPopulate: false });
+
+    // 3️⃣ Merge results (avoid duplicates by _id)
+    const combined = [
+      ...textResults,
+      ...regexResults.filter(
+        (doc) => !textResults.some((t) => t._id.equals(doc._id))
+      ),
+    ].slice(0, 10); // ✅ only send 10 max
+
+    res.json(combined);
   } catch (err) {
+    console.error("❌ Search error:", err.message);
     res.status(500).json({ error: err.message });
   }
 };

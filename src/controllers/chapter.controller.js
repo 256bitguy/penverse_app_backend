@@ -62,7 +62,7 @@ export const getChapters = async (req, res) => {
       return res.status(400).json({ message: "Book ID is required" });
     }
 
-    const chapters = await Chapter.find({ bookId }).populate("bookId", "title author");
+    const chapters = await Chapter.find({ bookId }).populate("bookId", "title author").sort({ createdAt: 1 });
 
     if (!chapters.length) {
       return res.status(404).json({ message: "No chapters found for this book" });

@@ -15,9 +15,9 @@ router.post("/", createVocabulary);             // Create
 router.get("/topic/:topicid", getVocabularyByTopic);           // Read all
 router.get("/:id", getVocabularyById);         // Read one
 router.put("/:id", updateVocabulary);          // Update
-router.delete("/:id", deleteVocabulary);       // Delete
+router.delete("/:id", deleteVocabulary);  
+ 
 
-// Search route
-router.get("/search/query", searchVocabulary); // ?query=word
+router.get("/search", searchVocabulary); // ?query=word
 
 export default router;

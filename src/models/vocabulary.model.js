@@ -17,6 +17,7 @@ const synonymAntonymSchema = new mongoose.Schema(
     meaning: { type: String, required: true },
     englishExplanation: { type: String, required: true },
     hindiExplanation: { type: String, required: true },
+    usage: { type: String, default: "" }, // ✅ optional usage
   },
   { _id: false }
 );
@@ -27,7 +28,7 @@ const vocabularySchema = new mongoose.Schema(
     word: {
       type: String,
       required: true,
-      unique:true,
+      unique: true,
       index: true, // ✅ fast exact match search
     },
     topicId: {
@@ -38,8 +39,9 @@ const vocabularySchema = new mongoose.Schema(
     },
     imageUrl: { type: String }, // optional
     partOfSpeech: { type: String }, // optional
+    usage: { type: String, default: "" }, // ✅ optional usage for main word
 
-    // ✅ Now a word can have multiple explanations
+    // ✅ Multiple explanations
     explanations: {
       type: [explanationSchema],
       required: true,
@@ -56,6 +58,10 @@ const vocabularySchema = new mongoose.Schema(
     synonyms: { type: [synonymAntonymSchema], default: [] },
     antonyms: { type: [synonymAntonymSchema], default: [] },
 
+    // ✅ Optional new fields
+    hindiMeaning: { type: String, default: "" },
+    hinglish: { type: String, default: "", index: true }, // indexed for search
+
     createdAt: { type: Date, default: undefined },
     updatedAt: { type: Date, default: undefined },
   },
@@ -70,11 +76,10 @@ vocabularySchema.pre("save", function (next) {
   next();
 });
 
-// ✅ Full-text search index
+// ✅ Full-text search index for word and hinglish
 vocabularySchema.index({
   word: "text",
-  "synonyms.word": "text",
-  "antonyms.word": "text",
+  hinglish: "text",
 });
 
 export const Vocabulary = mongoose.model("Vocabulary", vocabularySchema);

@@ -28,7 +28,7 @@ const questionSchema = new mongoose.Schema({
 }, { _id: true }); // Each question has its own _id
 
 function arrayLimit(val) {
-  return val.length === 4;
+  return val.length === 5;
 }
 
 // Parent schema to hold multiple questions
@@ -44,7 +44,7 @@ const questionSetSchema = new mongoose.Schema({
   questions: { type: [questionSchema], default: [] } // Array of questions
 }, { timestamps: true });
 
-// Ensure index is created (optional, since `index: true` already does this)
-questionSetSchema.index({ topicId: 1 });
+
+
 
 export default mongoose.model("QuestionSet", questionSetSchema);
