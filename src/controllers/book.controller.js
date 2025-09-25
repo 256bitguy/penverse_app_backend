@@ -46,7 +46,7 @@ export const getAllBooks = async (req, res) => {
     // Directly query MongoDB using the indexed field
     const books = await Book.find({ subjectId })
       .populate("subjectId", "name") // Include subject name
-      .sort({ createdAt: -1 }); // Optional: newest first
+      .sort({ createdAt: 1 }); // Optional: newest first
 
     if (!books.length) {
       return res.status(404).json({ message: "No books found for this subject" });

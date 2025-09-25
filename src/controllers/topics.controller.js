@@ -76,7 +76,7 @@ export const getTopicById = async (req, res) => {
 export const getTopicsByChapter = async (req, res) => {
   try {
     const { chapterId } = req.params;
-    const topics = await Topic.find({ chapterId }).sort({ createdAt: -1 });
+    const topics = await Topic.find({ chapterId }).sort({ createdAt: 1 });
 
     if (!topics.length) {
       return res.status(404).json({ message: "No topics found for this chapter" });
